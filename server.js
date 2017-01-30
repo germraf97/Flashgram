@@ -9,6 +9,10 @@ flashgram.get('/', function(req, res) {
     res.render('index');
 })
 
+flashgram.get('/signup', function(req, res) {
+    res.render('index');
+})
+
 flashgram.listen(3000, function(err){
     if (err) {
         console.log('Hubo un error'), process.exit(1);
