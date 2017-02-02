@@ -4,6 +4,7 @@ var rename = require('gulp-rename');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var babel = require('babelify');
+var watchify =require('watchify')
 
 gulp.task('styles', function(){
     gulp
@@ -19,14 +20,37 @@ gulp.task('assets', function() {
     .pipe(gulp.dest('public'))
 })
 
-gulp.task('scripts', function(){
-    browserify('src/index.js')
-    .transform(babel, {presets: ["es2015"]})
+function compile (watch) {
+	var bundle = watchify(browserify('src/index.js'), {debug:true})
+
+function rebundle (){
+	bundle
+	.transform(babel, {presets: ["es2015"]})
     .bundle()
     .pipe(source('index.js'))
     .pipe(rename('app.js'))
     .pipe(gulp.dest('public'));
-})
+}
 
-gulp.task('default', ['styles', 'assets', 'scripts']);
+if (watch) {
+	bundle.on('update', function(){
+		console.log("Compilando...");
+		rebundle()
+	})
+}
+
+rebundle();
+
+};
+
+gulp.task('build', function(){
+	return compile();
+});
+
+gulp.task('watch', function(){
+	return compile(true);
+});
+
+
+gulp.task('default', ['styles', 'assets', 'watch' ]);
 
